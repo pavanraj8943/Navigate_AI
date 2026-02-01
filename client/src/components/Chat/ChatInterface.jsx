@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
 
 export function ChatInterface() {
     const [messages, setMessages] = useState([
         { id: 1, role: 'assistant', content: "Hello! I'm your Navigate Assistant. Upload your resume to get started, or ask me any general interview questions." }
     ]);
     const [input, setInput] = useState('');
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
+    const toggleFullScreen = () => setIsFullScreen(!isFullScreen);
 
     const handleSend = () => {
         if (!input.trim()) return;
@@ -24,7 +27,7 @@ export function ChatInterface() {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-[600px] transition-colors">
+        <div className={`bg-white shadow-sm border border-slate-200 flex flex-col transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-50 h-[100dvh] rounded-none' : 'h-[600px] rounded-xl'}`}>
             {/* Chat Application Header */}
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -39,10 +42,19 @@ export function ChatInterface() {
                         </div>
                     </div>
                 </div>
-                <button className="text-xs font-medium text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full hover:bg-indigo-100 transition-colors flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" />
-                    New Session
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleFullScreen}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
+                    >
+                        {isFullScreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                    </button>
+                    <button className="text-xs font-medium text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full hover:bg-indigo-100 transition-colors flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        New Session
+                    </button>
+                </div>
             </div>
 
             {/* Messages Area */}

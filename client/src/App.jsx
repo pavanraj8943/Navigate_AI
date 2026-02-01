@@ -1,11 +1,16 @@
 import React from 'react';
-import { Layout } from './components/common/Layout';
 import { DashboardPage } from './pages/DashboardPage';
+import { Layout } from './components/common/Layout';
+import { InterviewPage } from './pages/InterviewPage';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
     return (
         <Layout>
-            <DashboardPage />
+            <Routes>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/interview" element={<InterviewPage />} />
+            </Routes>
         </Layout>
     );
 }

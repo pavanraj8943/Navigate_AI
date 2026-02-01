@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ResumeUpload } from '../components/resume/ResumeUpload';
+import { ResumeParsing } from '../components/resume/ResumeParsing';
+import { ResumePreview } from '../components/resume/ResumePreview';
 import { ChatInterface } from '../components/Chat/ChatInterface';
 import { BarChart3, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 export function DashboardPage() {
+    const navigate = useNavigate();
+    const [uploadedFile, setUploadedFile] = useState(null);
+    const [isParsing, setIsParsing] = useState(false);
+    const [parsedData, setParsedData] = useState(null);
+
+    const handleFileUpload = (file) => {
+        setUploadedFile(file);
+        setIsParsing(true);
+        setParsedData(null);
+    };
+
+    const handleParsingComplete = () => {
+        setIsParsing(false);
+        setParsedData({ status: 'success' }); // Mock data presence
+    };
+
     return (
         <div className="space-y-6">
             {/* Welcome Section */}
@@ -46,7 +65,13 @@ export function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 {/* Left Column: Context & Upload */}
                 <div className="space-y-6 lg:col-span-1">
-                    <ResumeUpload />
+                    {!uploadedFile ? (
+                        <ResumeUpload onFileUpload={handleFileUpload} />
+                    ) : isParsing ? (
+                        <ResumeParsing onComplete={handleParsingComplete} />
+                    ) : (
+                        <ResumePreview file={uploadedFile} data={parsedData} />
+                    )}
 
                     <div className="bg-blue-600 rounded-xl p-6 text-white relative overflow-hidden shadow-lg shadow-blue-500/20">
                         <div className="relative z-10">
@@ -54,7 +79,10 @@ export function DashboardPage() {
                             <p className="text-blue-100 text-sm leading-relaxed">
                                 "When answering behavioral questions, remember to focus on your specific contribution, not just what the team did."
                             </p>
-                            <button className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm">
+                            <button
+                                onClick={() => navigate('/interview')}
+                                className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm"
+                            >
                                 Practice Behavioral
                             </button>
                         </div>

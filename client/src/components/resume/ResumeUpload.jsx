@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UploadCloud, FileText, X } from 'lucide-react';
 
-export function ResumeUpload() {
+export function ResumeUpload({ onFileUpload }) {
     const [dragActive, setDragActive] = useState(false);
     const [file, setFile] = useState(null);
 
@@ -22,6 +22,7 @@ export function ResumeUpload() {
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             // Validate file type (pdf, docx) if needed
             setFile(e.dataTransfer.files[0]);
+            if (onFileUpload) onFileUpload(e.dataTransfer.files[0]);
         }
     };
 
@@ -29,6 +30,7 @@ export function ResumeUpload() {
         e.preventDefault();
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
+            if (onFileUpload) onFileUpload(e.target.files[0]);
         }
     };
 
