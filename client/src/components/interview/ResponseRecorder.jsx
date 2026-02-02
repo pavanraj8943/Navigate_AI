@@ -33,7 +33,7 @@ export function ResponseRecorder({ isRecording, onToggleRecording }) {
                 stream.getTracks().forEach(track => track.stop());
             }
         };
-    }, []);
+    }, [stream]);
 
     // Re-attach stream if video ref updates
     useEffect(() => {
@@ -65,8 +65,8 @@ export function ResponseRecorder({ isRecording, onToggleRecording }) {
                     onClick={onToggleRecording}
                     disabled={!!error}
                     className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all shadow-lg ${isRecording
-                            ? 'bg-red-500 hover:bg-red-600 text-white'
-                            : 'bg-white hover:bg-blue-50 text-slate-900'
+                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        : 'bg-white hover:bg-blue-50 text-slate-900'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                     {isRecording ? (

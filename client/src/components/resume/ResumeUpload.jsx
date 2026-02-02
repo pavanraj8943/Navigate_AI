@@ -75,7 +75,7 @@ export function ResumeUpload({ onFileUpload }) {
                             <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-slate-800 truncate max-w-[200px]">{file.name}</p>
+                            <p className="text-sm font-medium text-slate-800 truncate max-w-50">{file.name}</p>
                             <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                         </div>
                     </div>

@@ -3,7 +3,7 @@ import { FileText, Mail, Phone, Award } from 'lucide-react';
 
 export function ResumePreview({ file }) {
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-[600px]">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-150">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h3 className="font-semibold text-slate-800 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-500" />

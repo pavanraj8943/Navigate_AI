@@ -3,7 +3,6 @@ import { Loader2, FileText, CheckCircle2 } from 'lucide-react';
 
 export function ResumeParsing({ onComplete }) {
     const [progress, setProgress] = useState(0);
-    const [step, setStep] = useState('Uploading...');
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -21,15 +20,15 @@ export function ResumeParsing({ onComplete }) {
         return () => clearInterval(interval);
     }, [onComplete]);
 
-    useEffect(() => {
-        if (progress < 30) setStep('Uploading document...');
-        else if (progress < 60) setStep('Analyzing layout...');
-        else if (progress < 90) setStep('Extracting skills and experience...');
-        else setStep('Finalizing...');
-    }, [progress]);
+    // Derived state for current step
+    let step = 'Uploading...';
+    if (progress < 30) step = 'Uploading document...';
+    else if (progress < 60) step = 'Analyzing layout...';
+    else if (progress < 90) step = 'Extracting skills and experience...';
+    else step = 'Finalizing...';
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 flex flex-col items-center justify-center min-h-[400px]">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 flex flex-col items-center justify-center min-h-100">
             <div className="relative mb-6">
                 <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center">
                     <FileText className="w-10 h-10 text-blue-600" />

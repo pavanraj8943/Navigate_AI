@@ -170,10 +170,7 @@ src/
 │   ├── CoachPage.jsx
 │   ├── InterviewPage.jsx
 │   └── AnalyticsPage.jsx
-│
-├── styles/
-│   ├── tailwind.css        
-│   └── globals.css        
+├       
 │
 ├── utils/
 │   ├── validators.js
