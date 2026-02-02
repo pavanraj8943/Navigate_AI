@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../context/UserContext';
 import { ResumeUpload } from '../components/resume/ResumeUpload';
 import { ResumeParsing } from '../components/resume/ResumeParsing';
 import { ResumePreview } from '../components/resume/ResumePreview';
@@ -8,19 +9,42 @@ import { BarChart3, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 export function DashboardPage() {
     const navigate = useNavigate();
+    const { user } = useUserContext();
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isParsing, setIsParsing] = useState(false);
     const [parsedData, setParsedData] = useState(null);
 
-    const handleFileUpload = (file) => {
+    const handleFileUpload = async (file) => {
         setUploadedFile(file);
         setIsParsing(true);
         setParsedData(null);
+
+        const formData = new FormData();
+        formData.append('resume', file);
+
+        try {
+            // Note: Authorization header not needed if using cookies
+            const res = await fetch('/api/resume/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setParsedData(data.data.parsed);
+            } else {
+                console.error('Upload failed:', data.message);
+                setIsParsing(false);
+            }
+        } catch (error) {
+            console.error('Error uploading resume:', error);
+            setIsParsing(false);
+        }
     };
 
     const handleParsingComplete = () => {
         setIsParsing(false);
-        setParsedData({ status: 'success' }); // Mock data presence
     };
 
     return (
@@ -28,7 +52,7 @@ export function DashboardPage() {
             {/* Welcome Section */}
             <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 transition-colors">Good Morning, Alex!</h1>
+                    <h1 className="text-2xl font-bold text-slate-800 transition-colors">Good Morning, {user?.name || 'User'}!</h1>
                     <p className="text-slate-500 mt-1 transition-colors">Ready to ace your next interview? Here's your progress.</p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm transition-colors">

@@ -5,22 +5,28 @@ import { SignUpPage } from './pages/SignUpPage';
 import { Layout } from './components/common/Layout';
 import { InterviewPage } from './pages/InterviewPage';
 import { Routes, Route } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
+import { ProtectedRoute } from './components/common/ProtectedRoute';
 
 function App() {
 
     return (
-        <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/*" element={
-                <Layout>
-                    <Routes>
-                        <Route path="/" element={<DashboardPage />} />
-                        <Route path="/interview" element={<InterviewPage />} />
-                    </Routes>
-                </Layout>
-            } />
-        </Routes>
+        <UserProvider>
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/*" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Routes>
+                                <Route path="/" element={<DashboardPage />} />
+                                <Route path="/interview" element={<InterviewPage />} />
+                            </Routes>
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+            </Routes>
+        </UserProvider>
     );
 }
 

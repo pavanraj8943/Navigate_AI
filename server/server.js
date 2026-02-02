@@ -14,9 +14,11 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(require('cookie-parser')());
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/resume', require('./routes/resume'));
 
 const PORT = process.env.PORT || 5000;
 
