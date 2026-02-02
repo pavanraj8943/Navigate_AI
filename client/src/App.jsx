@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { LogoAnimation } from './components/common/LogoAnimation';
+import React from 'react';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignUpPage } from './pages/SignUpPage';
@@ -8,11 +7,6 @@ import { InterviewPage } from './pages/InterviewPage';
 import { Routes, Route } from 'react-router-dom';
 
 function App() {
-    const [showSplash, setShowSplash] = useState(true);
-
-    if (showSplash) {
-        return <LogoAnimation onComplete={() => setShowSplash(false)} />;
-    }
 
     return (
         <Routes>
