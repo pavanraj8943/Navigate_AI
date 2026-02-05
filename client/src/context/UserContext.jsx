@@ -16,7 +16,16 @@ export const UserProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
+
+      if (!res.ok) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
       const data = await res.json();
       if (data.success) {
         setUser(data.data);
@@ -26,6 +35,7 @@ export const UserProvider = ({ children }) => {
         setUser(null);
       }
     } catch (err) {
+      console.error('Check auth error:', err);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -34,67 +44,89 @@ export const UserProvider = ({ children }) => {
   };
 
   const googleLogin = async (tokenId) => {
-    const res = await fetch('/api/auth/google', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ tokenId })
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tokenId }),
+        credentials: 'include'
+      });
 
-    if (res.ok) {
-      setUser(data.user);
-      setIsAuthenticated(true);
-      return { success: true };
-    } else {
-      return { success: false, error: data.message };
+      const data = await res.json();
+
+      if (res.ok) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return { success: true };
+      } else {
+        return { success: false, error: data.message || 'Google login failed' };
+      }
+    } catch (err) {
+      console.error('Google login fetch error:', err);
+      return { success: false, error: 'Network error or server unavailable' };
     }
   };
 
   const login = async (email, password) => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
+      });
 
-    if (res.ok) {
-      // Cookie is set automatically by server
-      setUser(data.user);
-      setIsAuthenticated(true);
-      return { success: true };
-    } else {
-      return { success: false, error: data.message };
+      const data = await res.json();
+
+      if (res.ok) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return { success: true };
+      } else {
+        return { success: false, error: data.message || 'Login failed' };
+      }
+    } catch (err) {
+      console.error('Login fetch error:', err);
+      return { success: false, error: 'Network error or server unavailable' };
     }
   };
 
   const register = async (name, email, password) => {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name, email, password })
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password }),
+        credentials: 'include'
+      });
 
-    if (res.ok) {
-      // Cookie is set automatically by server
-      setUser(data.user);
-      setIsAuthenticated(true);
-      return { success: true };
-    } else {
-      return { success: false, error: data.message };
+      const data = await res.json();
+
+      if (res.ok) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return { success: true };
+      } else {
+        return { success: false, error: data.message || 'Registration failed' };
+      }
+    } catch (err) {
+      console.error('Register fetch error:', err);
+      return { success: false, error: 'Network error or server unavailable' };
     }
   };
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout');
+      await fetch('/api/auth/logout', {
+        method: 'GET',
+        credentials: 'include'
+      });
       setUser(null);
       setIsAuthenticated(false);
     } catch (err) {

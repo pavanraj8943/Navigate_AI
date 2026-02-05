@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../context/UserContext';
@@ -6,7 +6,8 @@ import { ResumeUpload } from '../components/resume/ResumeUpload';
 import { ResumeParsing } from '../components/resume/ResumeParsing';
 import { ResumePreview } from '../components/resume/ResumePreview';
 import { ChatInterface } from '../components/Chat/ChatInterface';
-import { BarChart3, TrendingUp, CheckCircle2, LogOut } from 'lucide-react';
+import { BarChart3, TrendingUp, CheckCircle2, LogOut, Loader2 } from 'lucide-react';
+import { analyticsService } from '../services/analyticsService';
 
 export function DashboardPage() {
     const navigate = useNavigate();
@@ -19,6 +20,23 @@ export function DashboardPage() {
         await logout();
         navigate('/login');
     };
+
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await analyticsService.getDashboardStats();
+                setStats(data.data);
+            } catch (error) {
+                console.error('Failed to fetch stats:', error);
+            } finally {
+                setStatsLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
 
     const handleFileUpload = async (file) => {
         setUploadedFile(file);
@@ -71,30 +89,38 @@ export function DashboardPage() {
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                    { label: 'Mock Interviews', value: '12', trend: '+2 this week', icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-50' },
-                    { label: 'Average Score', value: '8.5/10', trend: 'Top 10%', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
-                    { label: 'Skills Mastered', value: '24', trend: '3 remaining', icon: CheckCircle2, color: 'text-purple-600', bg: 'bg-purple-50' },
+                    { label: 'Mock Interviews', value: stats?.totalSessions || '0', trend: 'Total sessions', icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-50' },
+                    { label: 'Average Score', value: `${stats?.averageScore || '0'}/10`, trend: 'AI Evaluation', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
+                    { label: 'Skills Analyzed', value: stats?.skillsAnalyzed || '0', trend: 'From resume', icon: CheckCircle2, color: 'text-purple-600', bg: 'bg-purple-50' },
                 ].map((stat, i) => (
                     <div key={i} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                                <h3 className="text-2xl font-bold text-slate-800 mt-1">{stat.value}</h3>
+                        {statsLoading ? (
+                            <div className="flex items-center justify-center p-4">
+                                <Loader2 className="w-6 h-6 animate-spin text-slate-300" />
                             </div>
-                            <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
-                                <stat.icon className="w-5 h-5" />
-                            </div>
-                        </div>
-                        <p className="text-xs font-medium text-slate-400 mt-4 flex items-center gap-1">
-                            <span className="text-green-500">{stat.trend}</span>
-                        </p>
+                        ) : (
+                            <>
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+                                        <h3 className="text-2xl font-bold text-slate-800 mt-1">{stat.value}</h3>
+                                    </div>
+                                    <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
+                                        <stat.icon className="w-5 h-5" />
+                                    </div>
+                                </div>
+                                <p className="text-xs font-medium text-slate-400 mt-4 flex items-center gap-1">
+                                    <span className="text-green-500">{stat.trend}</span>
+                                </p>
+                            </>
+                        )}
                     </div>
                 ))}
             </div>
 
-        
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-             
+
                 <div className="space-y-6 lg:col-span-1">
                     {!uploadedFile ? (
                         <ResumeUpload onFileUpload={handleFileUpload} />

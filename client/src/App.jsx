@@ -4,6 +4,8 @@ import { LoginPage } from './pages/LoginPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { Layout } from './components/common/Layout';
 import { InterviewPage } from './pages/InterviewPage';
+import { CoachPage } from './pages/CoachPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
 import { Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
@@ -25,7 +27,9 @@ function App() {
                                 <Layout>
                                     <Routes>
                                         <Route path="/" element={<DashboardPage />} />
+                                        <Route path="/coach" element={<CoachPage />} />
                                         <Route path="/interview" element={<InterviewPage />} />
+                                        <Route path="/analytics" element={<AnalyticsPage />} />
                                     </Routes>
                                 </Layout>
                             </ChatProvider>

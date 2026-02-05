@@ -1,7 +1,8 @@
-// Analytics routes (Progress tracking, insights)
 const express = require('express');
 const router = express.Router();
+const { getDashboardStats } = require('../controllers/analyticsController');
+const { protect } = require('../middleware/auth');
 
-// TODO: Implement analytics routes
+router.get('/dashboard', protect, getDashboardStats);
 
 module.exports = router;

@@ -1,7 +1,18 @@
-// Interview routes (Interview sessions, feedback)
 const express = require('express');
 const router = express.Router();
+const {
+    startSession,
+    submitAnswer,
+    getSession,
+    getSessions
+} = require('../controllers/interviewController');
+const { protect } = require('../middleware/auth');
 
-// TODO: Implement interview routes
+router.use(protect);
+
+router.post('/start', startSession);
+router.post('/:id/answer', submitAnswer);
+router.get('/:id', getSession);
+router.get('/', getSessions);
 
 module.exports = router;
