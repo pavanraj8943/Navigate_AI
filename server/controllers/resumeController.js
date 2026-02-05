@@ -1,8 +1,6 @@
 const Resume = require('../models/Resume');
 const User = require('../models/User');
-const fs = require('fs');
-const pdf = require('pdf-parse');
-const path = require('path');
+const { extractResumeData } = require('../utils/resumeExtractor');
 
 // @desc    Upload new resume
 // @route   POST /api/resume/upload
@@ -13,21 +11,18 @@ exports.uploadResume = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    // Basic PDF parsing
-    let rawText = '';
+    // Parse and extract data
+    let extracted;
     try {
-      if (req.file.mimetype === 'application/pdf') {
-        const dataBuffer = fs.readFileSync(req.file.path);
-        const data = await pdf(dataBuffer);
-        rawText = data.text;
-      } else {
-        // Fallback for text/other (if allowed)
-        rawText = fs.readFileSync(req.file.path, 'utf8');
-      }
+      extracted = await extractResumeData(req.file.path, req.file.mimetype);
     } catch (parseError) {
-      console.error('Error parsing PDF:', parseError);
-      // We continue even if parsing fails, just saving the file record
+      console.error('Extraction error:', parseError);
+      // Even if extraction fails, we might want to fail the request or just save the file without data.
+      // For now, let's treat it as a hard failure for better UX feedback.
+      return res.status(500).json({ message: 'Failed to process resume file' });
     }
+
+    const { text: rawText, data: extractedData } = extracted;
 
     // Create Resume record
     const resume = await Resume.create({
@@ -38,18 +33,22 @@ exports.uploadResume = async (req, res) => {
       size: req.file.size,
       path: req.file.path,
       rawText: rawText,
-      // Initialize basic parsed structure
+      // Initialize parsed structure with extracted data
       parsed: {
         personalInfo: {
           name: req.user.name, // Default to user name
-          email: req.user.email
-        }
+          email: extractedData.personalInfo.email || req.user.email,
+          phone: extractedData.personalInfo.phone || '',
+          location: '',
+          links: extractedData.personalInfo.links || []
+        },
+        summary: extractedData.summary || '',
+        skills: extractedData.skills,
+        experience: extractedData.experience || [],
+        education: extractedData.education || [],
+        projects: extractedData.projects || []
       }
     });
-
-    // Add resume to user's list
-    // (If using virtuals this isn't strictly necessary for query, but good if we had an array)
-    // database is one-to-many via Resume.user, so virtual populates it.
 
     res.status(201).json({
       success: true,
@@ -60,7 +59,11 @@ exports.uploadResume = async (req, res) => {
     console.error(err);
     // Clean up file if database save fails
     if (req.file) {
-      fs.unlinkSync(req.file.path);
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (e) {
+        console.error('Error deleting file:', e);
+      }
     }
     res.status(500).json({ message: 'Server Error' });
   }

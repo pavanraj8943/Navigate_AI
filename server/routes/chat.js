@@ -1,7 +1,8 @@
-// Chat routes (Chat messages, context retrieval)
 const express = require('express');
 const router = express.Router();
+const { sendMessage } = require('../controllers/chatController');
+const { protect } = require('../middleware/auth');
 
-// TODO: Implement chat routes
+router.post('/', protect, sendMessage);
 
 module.exports = router;
