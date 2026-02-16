@@ -15,6 +15,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ChatProvider } from './context/ChatContext';
 
 import { PublicRoute } from './components/common/PublicRoute';
+import { PageWrapper } from './components/common/PageWrapper';
 
 function App() {
 
@@ -24,12 +25,16 @@ function App() {
                 <Routes>
                     <Route path="/login" element={
                         <PublicRoute>
-                            <LoginPage />
+                            <PageWrapper>
+                                <LoginPage />
+                            </PageWrapper>
                         </PublicRoute>
                     } />
                     <Route path="/signup" element={
                         <PublicRoute>
-                            <SignUpPage />
+                            <PageWrapper>
+                                <SignUpPage />
+                            </PageWrapper>
                         </PublicRoute>
                     } />
                     <Route path="/*" element={
@@ -37,11 +42,10 @@ function App() {
                             <ChatProvider>
                                 <Layout>
                                     <Routes>
-                                        <Route path="/" element={<DashboardPage />} />
-                                        <Route path="/coach" element={<CoachPage />} />
-                                        <Route path="/interview" element={<InterviewPage />} />
-                                        <Route path="/analytics" element={<AnalyticsPage />} />
-
+                                        <Route path="/" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+                                        <Route path="/coach" element={<PageWrapper><CoachPage /></PageWrapper>} />
+                                        <Route path="/interview" element={<PageWrapper><InterviewPage /></PageWrapper>} />
+                                        <Route path="/analytics" element={<PageWrapper><AnalyticsPage /></PageWrapper>} />
                                     </Routes>
                                 </Layout>
                             </ChatProvider>
@@ -49,7 +53,7 @@ function App() {
                     } />
                 </Routes>
             </GoogleOAuthProvider>
-        </UserProvider>
+        </UserProvider >
     );
 }
 

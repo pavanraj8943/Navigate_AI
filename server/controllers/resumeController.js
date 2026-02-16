@@ -51,6 +51,18 @@ exports.uploadResume = async (req, res) => {
       }
     });
 
+    // Trigger AI Analysis for Level and Insights
+    // We do this asynchronously but await it here to ensure data is ready for the interview. 
+    // In a production app with long resumes, this might be a background job.
+    try {
+      const analysis = await aiService.analyzeResumeLevel(rawText);
+      resume.analysis = analysis;
+      await resume.save();
+    } catch (analysisErr) {
+      console.error('AI Analysis failed:', analysisErr);
+      // Continue without analysis, defaulting to Intermediate
+    }
+
     // Initialize Chat Session with Greeting
     const ChatMessage = require('../models/ChatMessage');
     let chatSession = await ChatMessage.findOne({ user: req.user.id }).sort({ 'sessionMetadata.lastActivity': -1 });
@@ -72,7 +84,7 @@ exports.uploadResume = async (req, res) => {
     // Add Greeting
     chatSession.messages.push({
       role: 'assistant',
-      content: `Hello, ${req.user.name}!`,
+      content: `Hello, ${req.user.name}! I've analyzed your resume and determined your level is **${resume.analysis?.level || 'Intermediate'}**. I'm ready to help you prepare.`,
       timestamp: new Date()
     });
     chatSession.sessionMetadata.lastActivity = new Date();

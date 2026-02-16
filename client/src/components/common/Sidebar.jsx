@@ -1,15 +1,22 @@
-import { LayoutDashboard, FileText, MessageSquare, Settings, LogOut, BarChart3, Target } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, FileText, MessageSquare, LogOut, BarChart3, Target } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../context/UserContext';
 
 export function Sidebar() {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { logout } = useUserContext();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
 
     const navItems = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
         { id: 'coach', label: 'AI Coach', icon: Target, path: '/coach' },
         { id: 'interview', label: 'Mock Interview', icon: MessageSquare, path: '/interview' },
         { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/analytics' },
-        { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
     ];
 
     return (
@@ -47,7 +54,10 @@ export function Sidebar() {
 
             {/* User Info / Logout */}
             <div className="p-4  border-t border-slate-800">
-                <button className="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-medium">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-medium"
+                >
                     <LogOut className="w-5 h-5" />
                     Sign Out
                 </button>

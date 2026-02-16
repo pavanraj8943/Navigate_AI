@@ -56,7 +56,19 @@ const resumeSchema = new mongoose.Schema({
   },
 
   // AI-generated insights
-  insights: {
+  analysis: {
+    level: {
+      type: String,
+      enum: ['Beginner', 'Intermediate', 'Advanced'],
+      default: 'Intermediate'
+    },
+    summary: String,
+    strengths: [String],
+    weaknesses: [String],
+    suggestedFocus: [String]
+  },
+
+  insights: { // Kept for backward compatibility if needed, or can be merged into analysis
     strengths: [String],
     gaps: [String],
     keywordsExtracted: [String],

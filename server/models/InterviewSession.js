@@ -13,26 +13,49 @@ const interviewSessionSchema = new mongoose.Schema({
 
   sessionType: {
     type: String,
-    enum: ['full-mock', 'quick-practice', 'specific-skills'],
-    default: 'quick-practice'
+    enum: ['full-mock', 'quick-practice', 'specific-skills', 'mock-test'],
+    default: 'full-mock'
   },
-  targetRole: String,
-  difficulty: {
+
+  status: {
     type: String,
-    enum: ['junior', 'mid', 'senior'],
-    default: 'mid'
+    enum: ['active', 'completed', 'abandoned'],
+    default: 'active'
+  },
+
+  targetRole: String,
+
+  currentDifficulty: {
+    type: String,
+    enum: ['Easy', 'Medium', 'Hard', 'Mixed'],
+    default: 'Medium'
+  },
+
+  // Track progress per section
+  sectionProgress: {
+    Resume: { count: { type: Number, default: 0 }, target: { type: Number, default: 7 } },
+    Technical: { count: { type: Number, default: 0 }, target: { type: Number, default: 7 } },
+    HR: { count: { type: Number, default: 0 }, target: { type: Number, default: 7 } }
+  },
+
+  // Current active section
+  currentSection: {
+    type: String,
+    enum: ['Resume', 'Technical', 'HR'],
+    default: 'Resume'
   },
 
   questions: [{
     question: String,
-    category: {
-      type: String,
-      enum: ['behavioral', 'technical', 'system-design']
-    },
-    userResponse: String, // Transcription or text input
+    category: String,
+    difficulty: String,
+    hint: String,
+    userResponse: String,
+    skipped: { type: Boolean, default: false },
     aiEvaluation: {
       score: Number, // 1-10
       feedback: String,
+      improvedAnswer: String,
       strengths: [String],
       improvements: [String]
     },
@@ -48,7 +71,8 @@ const interviewSessionSchema = new mongoose.Schema({
     summary: String,
     strengths: [String],
     areasForImprovement: [String],
-    nextSteps: [String]
+    nextSteps: [String],
+    interviewReadinessScore: Number
   },
 
   startedAt: {

@@ -57,7 +57,6 @@ export function ResumePreview({ file, data, onDelete, resumeId }) {
                 {/* Candidate Info */}
                 <div className="space-y-4">
                     <div className="border-b border-slate-100 pb-4">
-                        <h4 className="text-xl font-bold text-slate-900 mb-1">{personalInfo.name || 'Candidate Name'}</h4>
                         <div className="flex flex-wrap gap-y-2 gap-x-4 text-sm text-slate-500">
                             {personalInfo.email && (
                                 <div className="flex items-center gap-1.5">
