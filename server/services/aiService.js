@@ -63,15 +63,7 @@ exports.generateResponse = async (messages, context) => {
         ${context || 'No specific context provided.'}
         `;
 
-        // Simplify for fallback: just construct a large prompt string since we are using generateContent mostly
-        // But activeModel in original code used startChat.
-        // To support fallback easily, we might switch to generateContent for chat if we want stateless,
-        // OR we just stick to one model for chat if it worked before?
-
-        // For this function 'generateResponse' (Chat), let's try to find a working model first if not set?
-        // Actually, let's just use generateWithFallback but we need to format history.
-
-        // Construct prompt history for generateContent (simpler than startChat for fallback logic)
+     
         const lastMessage = messages[messages.length - 1];
         const historyText = messages.slice(0, -1).map(m => `${m.role === 'assistant' ? 'Model' : 'User'}: ${m.content}`).join('\n');
 
