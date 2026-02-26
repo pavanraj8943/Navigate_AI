@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { constants } from '../utils/constants';
 
 const UserContext = createContext();
 
@@ -22,7 +21,7 @@ export const UserProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch(`${constants.API_BASE_URL}/auth/me`, {
+      const res = await fetch('/api/auth/me', {
         credentials: 'include'
       });
 
@@ -62,7 +61,7 @@ export const UserProvider = ({ children }) => {
 
   const googleLogin = async (tokenId) => {
     try {
-      const res = await fetch(`${constants.API_BASE_URL}/auth/google`, {
+      const res = await fetch('/api/auth/google', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -90,7 +89,7 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await fetch(`${constants.API_BASE_URL}/auth/login`, {
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -118,7 +117,7 @@ export const UserProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const res = await fetch(`${constants.API_BASE_URL}/auth/register`, {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -144,7 +143,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch(`${constants.API_BASE_URL}/auth/logout`, {
+      await fetch('/api/auth/logout', {
         method: 'GET',
         credentials: 'include'
       });
