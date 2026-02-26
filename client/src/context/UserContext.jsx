@@ -21,7 +21,8 @@ export const UserProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const res = await fetch(`${API_URL}/auth/me`, {
         credentials: 'include'
       });
 
@@ -61,7 +62,8 @@ export const UserProvider = ({ children }) => {
 
   const googleLogin = async (tokenId) => {
     try {
-      const res = await fetch('/api/auth/google', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const res = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -89,7 +91,8 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await fetch('/api/auth/login', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -117,7 +120,8 @@ export const UserProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const res = await fetch('/api/auth/register', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -143,7 +147,8 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      await fetch(`${API_URL}/auth/logout`, {
         method: 'GET',
         credentials: 'include'
       });
