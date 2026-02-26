@@ -29,7 +29,8 @@ export const api = {
   }).then(handleResponse),
   put: (endpoint, data) => fetch(`${API_BASE_URL}${endpoint}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' ,
+    'Accept': 'application/json' },
     body: JSON.stringify(data),
     credentials: 'include'
   }).then(handleResponse),
