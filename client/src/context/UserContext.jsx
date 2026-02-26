@@ -21,7 +21,8 @@ export const UserProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       const res = await fetch(`${API_URL}/auth/me`, {
         credentials: 'include'
       });
@@ -62,7 +63,8 @@ export const UserProvider = ({ children }) => {
 
   const googleLogin = async (tokenId) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       const res = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
         headers: {
@@ -91,7 +93,8 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -120,7 +123,8 @@ export const UserProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -147,7 +151,8 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
+      const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       await fetch(`${API_URL}/auth/logout`, {
         method: 'GET',
         credentials: 'include'
