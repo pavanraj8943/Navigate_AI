@@ -1,5 +1,5 @@
 // API service for making HTTP requests
-const API_BASE_URL =  import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://navigate-ai-backend.onrender.com/api';
 
 const handleResponse = async (response) => {
   const contentType = response.headers.get("content-type");
@@ -29,8 +29,10 @@ export const api = {
   }).then(handleResponse),
   put: (endpoint, data) => fetch(`${API_BASE_URL}${endpoint}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' ,
-    'Accept': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
     body: JSON.stringify(data),
     credentials: 'include'
   }).then(handleResponse),

@@ -12,8 +12,22 @@ connectDB();
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'https://navigate-ai-frontend.onrender.com',
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
