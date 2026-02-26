@@ -13,10 +13,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: [
-      "http://localhost:5173",
-      "https://navigate-ai-frontend.onrender.com"
-    ],
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 app.use(express.json());
