@@ -139,7 +139,7 @@ export function DashboardPage() {
                     <p className="text-slate-500 mt-1 transition-colors">Ready to ace your next interview? Here's your progress.</p>
                 </div>
 
-                <div className="flex flex-col items-end gap-3">
+                <div className="flex flex-col items-start md:items-end gap-3">
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm transition-colors">
                         <span>Target Role:</span>
                         {isEditingRole ? (

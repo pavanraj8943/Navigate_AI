@@ -60,12 +60,12 @@ export function AnalyticsPage() {
 
     return (
         <div className="space-y-8">
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Performance Analytics</h1>
                     <p className="text-slate-500">Track your progress and identify areas for improvement</p>
                 </div>
-                <div className="text-right">
+                <div className="text-left md:text-right">
                     <div className="text-3xl font-mono font-bold text-blue-600">
                         {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>

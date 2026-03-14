@@ -15,8 +15,8 @@ export function Layout({ children }) {
 
                 {/* Scrollable Content Container */}
                 <div className="flex-1 overflow-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-slate-100 dark:scrollbar-track-slate-900 flex flex-col">
-                    <main className="flex-1 p-6">
-                        <div className="max-w-7xl mx-auto w-full">
+                    <main className="flex-1 p-4 md:p-6">
+                        <div className="mx-auto w-full max-w-7xl">
                             {children}
                         </div>
                     </main>

@@ -77,7 +77,7 @@ export function LoginPage() {
                 </div>
 
                 {/* Login Form */}
-                <div className="bg-white rounded-xl shadow-lg p-8">
+                <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
                     {/* Google Sign In Button */}
                     <div className="mb-6 flex justify-center">
                         <GoogleLogin

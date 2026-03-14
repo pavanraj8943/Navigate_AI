@@ -178,7 +178,7 @@ export function InterviewPage() {
             </div>
 
             {/* Content Area */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 min-h-[500px] p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 min-h-[500px] p-4 md:p-8">
 
                 {step === 'loading' && (
                     <div className="h-full flex flex-col items-center justify-center space-y-4 py-20">

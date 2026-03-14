@@ -96,7 +96,7 @@ export function SignUpPage() {
                 </div>
 
                 {/* Sign Up Form */}
-                <div className="bg-white rounded-xl shadow-lg p-8">
+                <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
                     {/* Google Sign Up Button */}
                     <div className="mb-6">
                         <button

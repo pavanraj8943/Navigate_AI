@@ -21,7 +21,7 @@ export function Header() {
     }, [dropdownRef]);
 
     return (
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-10 transition-colors duration-200">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 shrink-0 z-10 transition-colors duration-200">
             {/* Title / Breadcrumbs */}
             <div className="flex items-center gap-3 transition-opacity">
                 <img src="/logo.png" alt="Navigate Logo" className="w-8 h-8 rounded-lg shadow-sm" />
