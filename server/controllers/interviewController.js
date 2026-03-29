@@ -9,9 +9,12 @@ const interviewController = {
   // @access  Private
   startSession: async (req, res) => {
     try {
-      const { targetRole } = req.body;
+      const { targetRole, interviewMode } = req.body;
       const context = await contextService.getContext(req.user.id);
       const resume = await Resume.findOne({ user: req.user.id }).sort({ uploadedAt: -1 });
+      
+      const modeStr = interviewMode || 'general';
+      const isHR = modeStr === 'hr';
 
       // Determine initial difficulty based on Resume Level (optional, but good for context)
       // For the mock test, we will enforce a fixed progression:
@@ -22,17 +25,17 @@ const interviewController = {
       // 5. Hard
 
       const questionsToGenerate = [
-        { difficulty: 'Easy', section: 'Technical' },
-        { difficulty: 'Medium', section: 'Technical' },
-        { difficulty: 'Medium', section: 'Technical' },
-        { difficulty: 'Hard', section: 'Technical' },
-        { difficulty: 'Hard', section: 'Technical' }
+        { difficulty: 'Easy', section: isHR ? 'HR' : 'Technical' },
+        { difficulty: 'Medium', section: isHR ? 'HR' : 'Technical' },
+        { difficulty: 'Medium', section: isHR ? 'HR' : 'Technical' },
+        { difficulty: 'Hard', section: isHR ? 'HR' : 'Technical' },
+        { difficulty: 'Hard', section: isHR ? 'HR' : 'Technical' }
       ];
 
       // Use batch generation to reduce API calls (1 call instead of 5)
       let generatedQuestions = [];
       try {
-        generatedQuestions = await aiService.generateBatchQuestions(context, 5, questionsToGenerate);
+        generatedQuestions = await aiService.generateBatchQuestions(context, 5, questionsToGenerate, targetRole, modeStr);
       } catch (err) {
         console.error("Failed to generate batch questions, falling back to mocks", err);
         // Fallback handled inside service, but double check
@@ -47,16 +50,16 @@ const interviewController = {
       const session = await InterviewSession.create({
         user: req.user.id,
         resume: resume ? resume._id : null,
-        sessionType: 'mock-test',
+        sessionType: modeStr,
         targetRole,
         currentDifficulty: 'Mixed', // Not really used in fixed mode
-        currentSection: 'Technical',
+        currentSection: isHR ? 'HR' : 'Technical',
         status: 'active',
         currentQuestionIndex: 0, // New field to track current question
         sectionProgress: {
           Resume: { count: 0, target: 0 },
-          Technical: { count: 0, target: 5 }, // 5 questions total
-          HR: { count: 0, target: 0 }
+          Technical: { count: 0, target: isHR ? 0 : 5 }, // 5 questions total
+          HR: { count: 0, target: isHR ? 5 : 0 }
         },
         questions: generatedQuestions
       });

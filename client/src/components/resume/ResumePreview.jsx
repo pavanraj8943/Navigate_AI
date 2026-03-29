@@ -14,7 +14,7 @@ export function ResumePreview({ file, data, onDelete, resumeId }) {
     const handleViewPdf = (e) => {
         e?.stopPropagation();
         if (file?.filename) {
-            window.open(`${API_ROOTJ}/uploads/${file.filename}`, '_blank');
+            window.open(`${API_ROOT}/uploads/${file.filename}`, '_blank');
         } else if (file instanceof File) {
             window.open(URL.createObjectURL(file), '_blank');
         }

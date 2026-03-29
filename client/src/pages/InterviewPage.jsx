@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, Bot, Send, User, CheckCircle, AlertCircle, Loader, SkipForward } from 'lucide-react';
 import { ResumeUpload } from '../components/resume/ResumeUpload';
 import { resumeService } from '../services/resumeService';
@@ -15,6 +16,8 @@ export function InterviewPage() {
     const [skipping, setSkipping] = useState(false);
     const [evaluations, setEvaluations] = useState({});
     const [loadingMessage, setLoadingMessage] = useState('');
+    const [interviewMode, setInterviewMode] = useState(null);
+    const [jdText, setJdText] = useState('');
 
     useEffect(() => {
         checkResume();
@@ -51,12 +54,13 @@ export function InterviewPage() {
         }
     };
 
-    const startInterview = async () => {
+    const startInterview = async (focusArea = '', mode = 'general') => {
         setLoadingMessage('Initializing AI Interviewer...');
         setStep('loading');
         try {
             const response = await interviewService.startSession({
-                targetRole: resume?.parsed?.personalInfo?.title || 'Software Engineer' // Default or extracted
+                targetRole: focusArea || resume?.parsed?.personalInfo?.title || 'Software Engineer',
+                interviewMode: mode
             });
             if (response.success) {
                 setSession(response.data);
@@ -156,6 +160,20 @@ export function InterviewPage() {
         return (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
     };
 
+    const markdownComponents = {
+        p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+        strong: ({ node, ...props }) => <strong className="font-semibold text-slate-900" {...props} />,
+        ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
+        ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />,
+        li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+        h1: ({ node, ...props }) => <h1 className="text-xl font-bold mt-4 mb-2 text-slate-800" {...props} />,
+        h2: ({ node, ...props }) => <h2 className="text-lg font-bold mt-4 mb-2 text-slate-800" {...props} />,
+        h3: ({ node, ...props }) => <h3 className="text-base font-bold mt-4 mb-2 text-slate-800" {...props} />,
+        code: ({ node, inline, ...props }) =>
+            inline ? <code className="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 text-xs font-mono" {...props} />
+                : <code className="block bg-slate-800 text-slate-50 p-3 rounded-lg text-sm my-2 overflow-x-auto font-mono" {...props} />
+    };
+
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
             {/* Header */}
@@ -198,22 +216,138 @@ export function InterviewPage() {
                 )}
 
                 {step === 'setup' && (
-                    <div className="max-w-xl mx-auto text-center py-10 space-y-8">
-                        <div className="bg-indigo-50 rounded-2xl p-8">
-                            <h2 className="text-xl font-bold text-indigo-900 mb-4">Ready to Start?</h2>
-                            <p className="text-indigo-700 mb-6">
-                                The AI has analyzed your resume level as <strong>{resume?.analysis?.level || 'Intermediate'}</strong>.
-                                <br />
-                                We will guide you through Resume, Technical, and HR questions, adapting to your performance.
+                    <div className="max-w-4xl mx-auto py-8">
+                        <div className="text-center mb-8 bg-indigo-50 rounded-2xl p-6">
+                            <h2 className="text-2xl font-bold text-indigo-900 mb-2">Configure Your Interview</h2>
+                            <p className="text-indigo-600">
+                                Assessment Level: <strong>{resume?.analysis?.level || 'Intermediate'}</strong>
                             </p>
+                        </div>
+
+                        {!interviewMode ? (
+                            <div className="grid md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
+                                {/* Skill Based */}
+                                <div
+                                    onClick={() => setInterviewMode('skill')}
+                                    className="bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 cursor-pointer transition-all shadow-sm hover:shadow-md group"
+                                >
+                                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <Bot className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-800 mb-2">Skill-Based Interview</h3>
+                                    <p className="text-slate-500 text-sm leading-relaxed">Focus strictly on specific technical skills extracted from your resume.</p>
+                                </div>
+
+                                {/* JD Based */}
+                                <div
+                                    onClick={() => setInterviewMode('jd')}
+                                    className="bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 cursor-pointer transition-all shadow-sm hover:shadow-md group"
+                                >
+                                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <User className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-800 mb-2">Job Description</h3>
+                                    <p className="text-slate-500 text-sm leading-relaxed">Paste a job description to simulate an interview for a specific role.</p>
+                                </div>
+
+                                {/* HR Based */}
+                                <div
+                                    onClick={() => setInterviewMode('hr')}
+                                    className="bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 cursor-pointer transition-all shadow-sm hover:shadow-md group"
+                                >
+                                    <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <CheckCircle className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-800 mb-2">HR & Behavioral</h3>
+                                    <p className="text-slate-500 text-sm leading-relaxed">Focus on culture fit, soft skills, and evaluating past experiences.</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm animate-in fade-in zoom-in-95 duration-300">
+                                <button
+                                    onClick={() => setInterviewMode(null)}
+                                    className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-6 text-sm font-medium transition-colors"
+                                >
+                                    <ArrowLeft className="w-4 h-4" /> Back to options
+                                </button>
+
+                                {interviewMode === 'skill' && (
+                                    <div className="space-y-6">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-slate-800 mb-2">Select a Skill</h3>
+                                            <p className="text-slate-500 text-sm">We've extracted these skills from your resume. Pick one to begin a specialized technical deep dive.</p>
+                                        </div>
+
+                                        {resume?.parsed?.skills && resume.parsed.skills.length > 0 ? (
+                                            <div className="flex flex-wrap gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                                                {resume.parsed.skills.map((skillCategory, idx) =>
+                                                    skillCategory.items?.map((skill, sIdx) => (
+                                                        <button
+                                                            key={`${idx}-${sIdx}`}
+                                                            onClick={() => startInterview(skill, 'skill')}
+                                                            className="px-4 py-2 bg-slate-50 text-indigo-700 border border-slate-200 rounded-full text-sm font-medium hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-colors"
+                                                        >
+                                                            {skill}
+                                                        </button>
+                                                    ))
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <p className="text-red-500 text-sm">No skills could be extracted from your resume. <button className="underline text-indigo-600 font-medium" onClick={() => startInterview('General Tech', 'skill')}>Start anyway</button></p>
+                                        )}
+                                    </div>
+                                )}
+
+                                {interviewMode === 'jd' && (
+                                    <div className="space-y-6">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-slate-800 mb-2">Paste Job Description</h3>
+                                            <p className="text-slate-500 text-sm">Paste the job description of the role you're applying for. We'll tailor the questions accordingly.</p>
+                                        </div>
+                                        <textarea
+                                            value={jdText}
+                                            onChange={(e) => setJdText(e.target.value)}
+                                            placeholder="Example: We are looking for a Senior React Developer with 5+ years of experience in Node.js..."
+                                            className="w-full h-48 p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition resize-none text-sm"
+                                        />
+                                        <button
+                                            disabled={!jdText.trim()}
+                                            onClick={() => startInterview(jdText, 'jd')}
+                                            className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition w-full disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200"
+                                        >
+                                            Start JD Interview
+                                        </button>
+                                    </div>
+                                )}
+
+                                {interviewMode === 'hr' && (
+                                    <div className="space-y-6 text-center py-6">
+                                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                            <User className="w-8 h-8" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-slate-800 mb-2">HR & Behavioral Interview</h3>
+                                            <p className="text-slate-500 max-w-md mx-auto mb-8 text-sm leading-relaxed">This session will evaluate your problem solving, past workplace experiences, and culture fit. Technical questions will be avoided.</p>
+                                            <button
+                                                onClick={() => startInterview('Behavioral Focus', 'hr')}
+                                                className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200"
+                                            >
+                                                Start HR Interview
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="text-center mt-8">
                             <button
-                                onClick={startInterview}
-                                className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition space-x-2 shadow-lg shadow-indigo-200"
+                                onClick={() => startInterview('', 'general')}
+                                className="text-sm font-medium text-slate-400 hover:text-slate-600 transition underline underline-offset-4"
                             >
-                                <span>Start Adaptive Interview</span>
+                                Skip and start a general interview
                             </button>
                         </div>
-                        <p className="text-sm text-slate-400">Powered by Gemini AI</p>
                     </div>
                 )}
 
@@ -290,9 +424,11 @@ export function InterviewPage() {
                                             Score: {evaluations[questions[currentQuestionIndex]._id].score}/10
                                         </div>
                                     </div>
-                                    <p className="text-slate-600 text-sm leading-relaxed">
-                                        {evaluations[questions[currentQuestionIndex]._id].feedback}
-                                    </p>
+                                    <div className="text-slate-600 text-sm leading-relaxed">
+                                        <ReactMarkdown components={markdownComponents}>
+                                            {evaluations[questions[currentQuestionIndex]._id].feedback}
+                                        </ReactMarkdown>
+                                    </div>
 
                                     <div className="pt-4 border-t border-slate-200">
                                         <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">My Answer</h4>
@@ -304,9 +440,11 @@ export function InterviewPage() {
                                     {evaluations[questions[currentQuestionIndex]._id].improvedAnswer && (
                                         <div className="pt-4 border-t border-slate-200">
                                             <h4 className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-2">Improved Answer</h4>
-                                            <p className="text-slate-700 text-sm bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                                {evaluations[questions[currentQuestionIndex]._id].improvedAnswer}
-                                            </p>
+                                            <div className="text-slate-700 text-sm bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
+                                                <ReactMarkdown components={markdownComponents}>
+                                                    {evaluations[questions[currentQuestionIndex]._id].improvedAnswer}
+                                                </ReactMarkdown>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

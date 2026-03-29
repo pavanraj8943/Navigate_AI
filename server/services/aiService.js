@@ -63,7 +63,7 @@ exports.generateResponse = async (messages, context) => {
         ${context || 'No specific context provided.'}
         `;
 
-     
+
         const lastMessage = messages[messages.length - 1];
         const historyText = messages.slice(0, -1).map(m => `${m.role === 'assistant' ? 'Model' : 'User'}: ${m.content}`).join('\n');
 
@@ -156,16 +156,17 @@ exports.evaluateAnswer = async (question, answer, context) => {
             Candidate Context: "${context}"
             
             Evaluate the answer on a scale of 1-10.
-            Provide constructive feedback and a better version of the answer.
+            Provide constructive feedback.
+            Also provide a better version of the answer. The improved answer MUST be concise (strictly 1 or 2 paragraphs maximum) and easy to understand.
             
             The output must be a valid JSON object with the following structure:
             {
                 "score": number (1-10),
                 "feedback": "Detailed feedback string",
-                "improvedAnswer": "A better version of the answer"
+                "improvedAnswer": "A concise, understandable improved answer (1-2 paragraphs max). You can use simple markdown like bolding or short lists."
             }
             
-            IMPORTANT: Return ONLY the JSON object. No markdown formatting or other text.
+            IMPORTANT: Return ONLY the JSON object. No markdown formatting outside the JSON object.
         `;
 
         const text = await generateWithFallback(prompt);
@@ -290,7 +291,7 @@ exports.generateNextQuestion = async (context, sessionState) => {
 };
 
 // Generate MULTIPLE questions in a single batch to save API calls
-exports.generateBatchQuestions = async (context, count, configs) => {
+exports.generateBatchQuestions = async (context, count, configs, targetRole = '', interviewMode = 'general') => {
     try {
         if (!checkClient()) {
             // Return mocks if unavailable
@@ -305,6 +306,10 @@ exports.generateBatchQuestions = async (context, count, configs) => {
         const prompt = `
             You are an expert technical interviewer.
             Context (Resume): "${context.substring(0, 5000)}"
+            ${interviewMode === 'skill' ? `\nCRITICAL INSTRUCTION: This is a SKILL-BASED interview focusing exclusively on the skill: "${targetRole}". You must generate questions ONLY about "${targetRole}", without including any other technologies. The questions must cover basic to advanced concepts along with practical scenarios.`
+                : interviewMode === 'jd' ? `\nCRITICAL INSTRUCTION: This is a JOB DESCRIPTION-BASED interview. The job description or role provided by the user is: "${targetRole}". If this job description is missing, empty, or very brief, automatically use the role and skills extracted from the resume context provided above. You must generate questions that strictly match the role, required skills, and real-world expectations.`
+                    : interviewMode === 'hr' ? `\nCRITICAL INSTRUCTION: This is an HR-LEVEL interview. You must generate general HR questions focusing strictly on communication, behavior, teamwork, and personality. Do not ask technical or coding questions.`
+                        : targetRole ? `\nCRITICAL INSTRUCTION: The candidate has specifically requested to focus this interview on their skill/role: "${targetRole}". You MUST ensure that the technical questions heavily emphasize and test their knowledge in "${targetRole}".` : ''}
             
             Generate ${count} interview questions based on the following specifications:
             ${configs.map((c, i) => `${i + 1}. Difficulty: ${c.difficulty}, Category: ${c.section}`).join('\n')}
